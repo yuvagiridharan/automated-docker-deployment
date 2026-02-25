@@ -9,17 +9,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: SSH and Deploy
+    - name: Deploy via SSH
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_IP }}
-        username: ubuntu
+        username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          sudo docker stop $(sudo docker ps -q)
-          sudo docker rm $(sudo docker ps -aq)
+
+          # Install git if not present
+          sudo yum install git -y || true
+
+          # Remove old project completely (force clean state)
+          rm -rf apprepo
+
+          # Clone fresh copy of repo
+          git clone https://github.com/YOUR_USERNAME/aws-automated-container-deployment.git apprepo
+
+          cd apprepo/app
+
+          # Stop and remove any existing container
+          sudo docker stop myweb || true
+          sudo docker rm myweb || true
+
+          # Remove old images (optional but clean)
+          sudo docker rmi myweb || true
+
+          # Build new image from latest code
           sudo docker build -t myweb .
-          sudo docker run -d -p 80:80 myweb
+
+          # Run new container
+          sudo docker run -d --name myweb -p 80:80 myweb
