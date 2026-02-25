@@ -27,7 +27,7 @@ jobs:
           rm -rf apprepo
 
           # Clone fresh copy of repo
-          git clone https://github.com/YOUR_USERNAME/aws-automated-container-deployment.git apprepo
+          git clone https://github.com/yuvagiridharan/automated-docker-deployment.git apprepo
 
           cd apprepo/app
 
