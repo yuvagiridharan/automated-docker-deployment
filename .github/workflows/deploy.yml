@@ -20,26 +20,31 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
 
-          # Install git if not present
-          sudo yum install git -y || true
+          echo "Connected to EC2"
 
-          # Remove old project completely (force clean state)
+          # --- Install git (Ubuntu uses apt, not yum) ---
+          sudo apt-get update -y
+          sudo apt-get install -y git
+
+          # --- Remove old repo and pull fresh copy ---
+          cd ~
           rm -rf apprepo
-
-          # Clone fresh copy of repo
           git clone https://github.com/yuvagiridharan/automated-docker-deployment.git apprepo
 
           cd apprepo/app
 
-          # Stop and remove any existing container
-          sudo docker stop myweb || true
-          sudo docker rm myweb || true
+          # --- Free port 80 (very important) ---
+          sudo fuser -k 80/tcp || true
 
-          # Remove old images (optional but clean)
-          sudo docker rmi myweb || true
+          # --- Clean docker completely ---
+          sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
+          sudo docker rm -f $(sudo docker ps -aq) 2>/dev/null || true
+          sudo docker rmi -f $(sudo docker images -aq) 2>/dev/null || true
 
-          # Build new image from latest code
+          # --- Build new container from latest code ---
           sudo docker build -t myweb .
 
-          # Run new container
-          sudo docker run -d --name myweb -p 80:80 myweb
+          # --- Run fresh container ---
+          sudo docker run -d --name myweb -p 80:80 --restart always myweb
+
+          echo "Deployment finished"
