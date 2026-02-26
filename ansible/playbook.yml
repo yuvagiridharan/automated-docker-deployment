@@ -1,0 +1,41 @@
+- hosts: web
+  become: yes
+
+  tasks:
+
+  - name: Update system packages
+    apt:
+      update_cache: yes
+
+  - name: Install Docker & Git
+    apt:
+      name:
+        - docker.io
+        - git
+      state: present
+
+  - name: Enable Docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: Remove old project
+    file:
+      path: /home/ubuntu/apprepo
+      state: absent
+
+  - name: Clone project repository
+    git:
+      repo: https://github.com/yuvagiridharan/automated-docker-deployment.git
+      dest: /home/ubuntu/apprepo
+
+  - name: Stop old container
+    command: docker rm -f myweb
+    ignore_errors: yes
+
+  - name: Build Docker Image
+    command: docker build -t myweb /home/ubuntu/apprepo/app
+
+  - name: Run Container
+    command: docker run -d --name myweb -p 80:80 --restart always myweb
