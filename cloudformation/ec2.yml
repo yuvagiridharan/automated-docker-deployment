@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EC2 Instance for Docker Deployment
+
+Resources:
+
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH and HTTP
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  WebInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      KeyName: devops-key
+      ImageId: ami-0b6c6ebed2801a5cb
+      SecurityGroupIds:
+        - !Ref WebSecurityGroup
+
+Outputs:
+  PublicIP:
+    Value: !GetAtt WebInstance.PublicIp
