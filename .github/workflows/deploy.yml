@@ -10,15 +10,13 @@ jobs:
 
     steps:
 
-    # ------------------------------
-    # STEP 1: Checkout Repository
-    # ------------------------------
+    
+    # Checkout Repository
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # ------------------------------
-    # STEP 2: Configure AWS Access
-    # ------------------------------
+    # Configure AWS Access
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -26,31 +24,31 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: us-east-1
 
-    # ------------------------------
-    # STEP 3: Deploy Infrastructure
-    # ------------------------------
+   
+    # Deploy Infrastructure
+    
     - name: Deploy CloudFormation Stack
       run: |
         aws cloudformation deploy \
           --template-file cloudformation/ec2.yml \
-          --stack-name devops-docker-stack \
+          --stack-name webstack01 \
           --capabilities CAPABILITY_NAMED_IAM
 
-    # ------------------------------
-    # STEP 4: Get EC2 Public IP
-    # ------------------------------
+   
+    #  Get EC2 Public IP
+   
     - name: Get Public IP
       id: getip
       run: |
         IP=$(aws cloudformation describe-stacks \
-        --stack-name devops-docker-stack \
+        --stack-name webstack01 \
         --query "Stacks[0].Outputs[0].OutputValue" \
         --output text)
         echo "EC2_IP=$IP" >> $GITHUB_ENV
 
-    # ------------------------------
-    # STEP 5: Run Ansible on EC2
-    # ------------------------------
+   
+    # Run Ansible on EC2
+
     - name: Configure Server & Deploy App
       uses: appleboy/ssh-action@master
       with:
