@@ -22,11 +22,11 @@ The system architecture follows a layered automation model:
 
 ##  Repository Structure
 
-* cloudformation/ - Contains the AWS CloudFormation YAML template for provisioning the EC2 instance and Security Groups.
-* `ansible/ - Contains the Ansible playbook used to configure the server, install dependencies, and run the Docker container.
-* src/ - Contains the sample web application (static HTML files).
-* Dockerfile - Instructions for packaging the Nginx web application into a Docker container.
-* .github/workflows/ - Contains the YAML workflow file that dictates the GitHub Actions CI/CD pipeline.
+├── cloudformation/      # Contains the AWS CloudFormation YAML template for EC2 and Security Groups
+├── ansible/             # Contains the Ansible playbook to configure the server, install dependencies, and run Docker
+├── src/                 # Contains the To-Do web application (static HTML files)
+├── Dockerfile           # Instructions for packaging the Nginx web application into a Docker container
+└── .github/workflows/   # Contains the YAML workflow file that dictates the GitHub Actions CI/CD pipeline
 
 ## Setup and Deployment Instructions
 
