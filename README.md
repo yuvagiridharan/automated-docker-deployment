@@ -20,6 +20,7 @@ The system architecture follows a layered automation model:
 * **CI/CD**: GitHub Actions
 * **Web Server**: Nginx
 
+
 ##  Repository Structure
 
 ├── cloudformation/      # Contains the AWS CloudFormation YAML template for EC2 and Security Groups
