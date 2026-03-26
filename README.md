@@ -19,6 +19,7 @@ The system architecture follows a layered automation models:
 * **CI/CD**: GitHub Actions
 * **Web Server**: Nginx
 
+<<<<<<< HEAD
 📦 your-repository-name
  ┣ 📂 .github
  ┃ ┗ 📂 workflows
@@ -31,6 +32,15 @@ The system architecture follows a layered automation models:
  ┃ ┗ 📜 index.html         # 🌐 Application Code: Your static To-Do web application files
  ┗ 🐳 Dockerfile             # 📦 Containerization: Blueprints for the Nginx web server image
  
+=======
+
+##  Repository Structure
+├── cloudformation/      # Contains the AWS CloudFormation YAML template for EC2 and Security Groups
+├── ansible/             # Contains the Ansible playbook to configure the server, install dependencies, and run Docker
+├── src/                 # Contains the To-Do web application (static HTML files)
+├── Dockerfile           # Instructions for packaging the Nginx web application into a Docker container
+└── .github/workflows/   # Contains the YAML workflow file that dictates the GitHub Actions CI/CD pipeline
+>>>>>>> 226e7df3774a3364cd647e7a5a3fca995ccbaf88
 ## Setup and Deployment Instructions
 
 To use this pipeline in your own environment, follow these steps:
