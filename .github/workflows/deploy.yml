@@ -45,8 +45,21 @@ jobs:
         --query "Stacks[0].Outputs[0].OutputValue" \
         --output text)
         echo "EC2_IP=$IP" >> $GITHUB_ENV
+        echo "Waiting for EC2 instance to be ready..."
+        sleep 30
 
-   
+    - name: Wait for EC2 SSH
+      run: |
+        for i in {1..30}; do
+          if timeout 5 bash -c "</dev/tcp/${{ env.EC2_IP }}/22" 2>/dev/null; then
+            echo "SSH port is open"
+            exit 0
+          fi
+          echo "Attempt $i: SSH port not ready, waiting..."
+          sleep 10
+        done
+        exit 1
+
     # Run Ansible on EC2
 
     - name: Configure Server & Deploy App
