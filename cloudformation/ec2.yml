@@ -1,5 +1,9 @@
-
 Description: EC2 Instance for Docker Deployment
+
+Parameters:
+  LatestUbuntuAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/canonical/ubuntu/server/22.04/stable/current/amd64/hvm/ebs-gp2/query-id'
 
 Resources:
 
@@ -23,10 +27,12 @@ Resources:
     Properties:
       InstanceType: t3.micro
       KeyName: devops-key
-      ImageId: ami-0b6c6ebed2801a5cb
+      ImageId: !Ref LatestUbuntuAmiId
       SecurityGroupIds:
         - !Ref WebSecurityGroup
 
 Outputs:
+  InstanceId:
+    Value: !Ref WebInstance
   PublicIP:
     Value: !GetAtt WebInstance.PublicIp

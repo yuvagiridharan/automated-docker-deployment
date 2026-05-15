@@ -35,22 +35,34 @@ jobs:
           --capabilities CAPABILITY_NAMED_IAM
 
    
-    #  Get EC2 Public IP
+    #  Get EC2 Public IP and Instance ID
    
-    - name: Get Public IP
-      id: getip
+    - name: Get Stack Outputs
+      id: outputs
       run: |
         IP=$(aws cloudformation describe-stacks \
-        --stack-name webstack01 \
-        --query "Stacks[0].Outputs[0].OutputValue" \
-        --output text)
+          --stack-name webstack01 \
+          --query "Stacks[0].Outputs[?OutputKey=='PublicIP'].OutputValue" \
+          --output text)
+        INSTANCE_ID=$(aws cloudformation describe-stacks \
+          --stack-name webstack01 \
+          --query "Stacks[0].Outputs[?OutputKey=='InstanceId'].OutputValue" \
+          --output text)
         echo "EC2_IP=$IP" >> $GITHUB_ENV
-        echo "Waiting for EC2 instance to be ready..."
-        sleep 30
+        echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
+        echo "Region: ${{ env.AWS_REGION }}"
+        echo "Instance IP: $IP"
+        echo "Instance ID: $INSTANCE_ID"
+
+    - name: Wait for Instance Status Checks
+      run: |
+        echo "Waiting for instance ${{ env.INSTANCE_ID }} to pass all status checks..."
+        aws ec2 wait instance-status-ok --instance-ids ${{ env.INSTANCE_ID }}
+        echo "Instance is fully initialized and reachable."
 
     - name: Wait for EC2 SSH
       run: |
-        for i in {1..30}; do
+        for i in {1..10}; do
           if timeout 5 bash -c "</dev/tcp/${{ env.EC2_IP }}/22" 2>/dev/null; then
             echo "SSH port is open"
             exit 0
