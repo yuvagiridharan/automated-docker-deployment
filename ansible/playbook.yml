@@ -1,41 +1,37 @@
 - hosts: web
   become: yes
+  vars:
+    project_dest: "/home/ubuntu/apprepo"
+    repo_url: "https://github.com/yuvagiridharan/automated-docker-deployment.git"
+    container_name: "myweb"
+    image_name: "myweb"
 
   tasks:
+    - name: Update system packages
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
 
-  - name: Update system packages
-    apt:
-      update_cache: yes
+    - name: Install dependencies
+      apt:
+        name: 
+          - docker.io
+          - git
+        state: present
 
-  - name: Install Docker & Git
-    apt:
-      name:
-        - docker.io
-        - git
-      state: present
+    - name: Pull latest code from repository
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ project_dest }}"
+        version: main
+        force: yes
 
-  - name: Enable Docker service
-    service:
-      name: docker
-      state: started
-      enabled: yes
+    - name: Build Docker Image
+      command: "docker build -t {{ image_name }} {{ project_dest }}/app"
 
-  - name: Remove old project
-    file:
-      path: /home/ubuntu/apprepo
-      state: absent
+    - name: Stop and remove old container
+      command: "docker rm -f {{ container_name }}"
+      ignore_errors: yes
 
-  - name: Clone project repository
-    git:
-      repo: https://github.com/yuvagiridharan/automated-docker-deployment.git
-      dest: /home/ubuntu/apprepo
-
-  - name: Stop old container
-    command: docker rm -f myweb
-    ignore_errors: yes
-
-  - name: Build Docker Image
-    command: docker build -t myweb /home/ubuntu/apprepo/app
-
-  - name: Run Container
-    command: docker run -d --name myweb -p 80:80 --restart always myweb
+    - name: Run Docker Container
+      command: "docker run -d --name {{ container_name }} -p 80:80 --restart always {{ image_name }}"

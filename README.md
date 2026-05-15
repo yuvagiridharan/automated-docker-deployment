@@ -19,28 +19,24 @@ The system architecture follows a layered automation models:
 * **CI/CD**: GitHub Actions
 * **Web Server**: Nginx
 
-<<<<<<< HEAD
-📦 your-repository-name
- ┣ 📂 .github
- ┃ ┗ 📂 workflows
- ┃   ┗ 📜 deploy.yml         # ⚙️ CI/CD Orchestrator: Triggers the automated pipeline on push
- ┣ 📂 ansible
- ┃ ┗ 📜 playbook.yml       # 🛠️ Configuration: Connects to EC2, installs Docker, & deploys app
- ┣ 📂 cloudformation
- ┃ ┗ 📜 template.yaml      # 🏗️ Infrastructure: Provisions the Ubuntu EC2 instance & firewalls
- ┣ 📂 src
- ┃ ┗ 📜 index.html         # 🌐 Application Code: Your static To-Do web application files
- ┗ 🐳 Dockerfile             # 📦 Containerization: Blueprints for the Nginx web server image
- 
-=======
+## Repository Structure
 
-##  Repository Structure
-├── cloudformation/      # Contains the AWS CloudFormation YAML template for EC2 and Security Groups
-├── ansible/             # Contains the Ansible playbook to configure the server, install dependencies, and run Docker
-├── src/                 # Contains the To-Do web application (static HTML files)
-├── Dockerfile           # Instructions for packaging the Nginx web application into a Docker container
-└── .github/workflows/   # Contains the YAML workflow file that dictates the GitHub Actions CI/CD pipeline
->>>>>>> 226e7df3774a3364cd647e7a5a3fca995ccbaf88
+```text
+.
+├── .github/
+│   └── workflows/
+│       └── deploy.yml         # CI/CD Orchestrator: Triggers the automated pipeline on push
+├── ansible/
+│   ├── devops-key.pem        # SSH Key for EC2 access
+│   ├── hosts                 # Ansible inventory file
+│   └── playbook.yml          # Configuration: Installs Docker & deploys app
+├── app/
+│   ├── Dockerfile            # Containerization: Blueprint for the Nginx web server image
+│   └── index.html            # Application Code: Your static web application
+└── cloudformation/
+    └── ec2.yml               # Infrastructure: Provisions the Ubuntu EC2 instance & firewalls
+```
+
 ## Setup and Deployment Instructions
 
 To use this pipeline in your own environment, follow these steps:
